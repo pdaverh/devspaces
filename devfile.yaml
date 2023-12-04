@@ -1,36 +1,48 @@
-schemaVersion: 2.2.0
+schemaVersion: 2.1.0
 metadata:
-  name: empty-8r64
-  namespace: pdave-dev
-attributes:
-  controller.devfile.io/devworkspace-config:
-    name: devworkspace-config
-    namespace: crw
-  controller.devfile.io/scc: container-build
-  controller.devfile.io/storage-type: common
-  dw.metadata.annotations:
-    che.eclipse.org/devfile-source: |
-      url:
-        location: >-
-          https://devspaces.apps.sandbox-m4.g2pi.p1.openshiftapps.com/dashboard/devfile-registry/devfiles/empty.yaml
-      factory:
-        params: >-
-          storageType=common&url=https://devspaces.apps.sandbox-m4.g2pi.p1.openshiftapps.com/dashboard/devfile-registry/devfiles/empty.yaml
+  name: dotnet
 components:
-  - container:
-      env:
-        - name: CHE_DASHBOARD_URL
-          value: https://devspaces.apps.sandbox-m4.g2pi.p1.openshiftapps.com
-        - name: CHE_PLUGIN_REGISTRY_URL
-          value: https://devspaces.apps.sandbox-m4.g2pi.p1.openshiftapps.com/plugin-registry/v3
-        - name: CHE_PLUGIN_REGISTRY_INTERNAL_URL
-          value: http://plugin-registry.crw.svc:8080/v3
-        - name: CLUSTER_CONSOLE_URL
-          value: https://console-openshift-console.apps.sandbox-m4.g2pi.p1.openshiftapps.com
-        - name: CLUSTER_CONSOLE_TITLE
-          value: OpenShift console
-        - name: OPENVSX_REGISTRY_URL
-          value: https://open-vsx.org
-      image: registry.redhat.io/devspaces/udi-rhel8@sha256:571ceed7b4b886b7f989ba193fa74ec863600f56f7c0045f3a1af6dadf09f85b
-      sourceMapping: /projects
-    name: universal-developer-image
+  - name: tools
+    container:
+      image: registry.redhat.io/devspaces/udi-rhel8:3.11
+      memoryLimit: '2Gi'
+      memoryRequest: '1Gi'
+      cpuLimit: '1'
+      cpuRequest: '0.5'
+      mountSources: true
+      endpoints:
+        - exposure: public
+          name: 'hello-endpoint'
+          protocol: http
+          targetPort: 5032
+      volumeMounts:
+        - name: nuget
+          path: /home/user/.nuget
+  - name: nuget
+    volume:
+      size: 1G
+commands:
+  - id: 1-update-dependencies
+    exec:
+      label: 1.Update dependencies
+      component: tools
+      workingDir: ${PROJECTS_ROOT}/dotnet-web-simple
+      commandLine: "dotnet restore"
+      group:
+        kind: build
+  - id: 2-build
+    exec:
+      label: 2.Build
+      component: tools
+      workingDir: ${PROJECTS_ROOT}/dotnet-web-simple
+      commandLine: "dotnet build"
+      group:
+        kind: build
+  - id: 3-run
+    exec:
+      label: 3.Run
+      component: tools
+      workingDir: ${PROJECTS_ROOT}/dotnet-web-simple
+      commandLine: "dotnet run"
+      group:
+        kind: run
