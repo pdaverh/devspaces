@@ -1,0 +1,36 @@
+schemaVersion: 2.2.0
+metadata:
+  name: empty-8r64
+  namespace: pdave-dev
+attributes:
+  controller.devfile.io/devworkspace-config:
+    name: devworkspace-config
+    namespace: crw
+  controller.devfile.io/scc: container-build
+  controller.devfile.io/storage-type: common
+  dw.metadata.annotations:
+    che.eclipse.org/devfile-source: |
+      url:
+        location: >-
+          https://devspaces.apps.sandbox-m4.g2pi.p1.openshiftapps.com/dashboard/devfile-registry/devfiles/empty.yaml
+      factory:
+        params: >-
+          storageType=common&url=https://devspaces.apps.sandbox-m4.g2pi.p1.openshiftapps.com/dashboard/devfile-registry/devfiles/empty.yaml
+components:
+  - container:
+      env:
+        - name: CHE_DASHBOARD_URL
+          value: https://devspaces.apps.sandbox-m4.g2pi.p1.openshiftapps.com
+        - name: CHE_PLUGIN_REGISTRY_URL
+          value: https://devspaces.apps.sandbox-m4.g2pi.p1.openshiftapps.com/plugin-registry/v3
+        - name: CHE_PLUGIN_REGISTRY_INTERNAL_URL
+          value: http://plugin-registry.crw.svc:8080/v3
+        - name: CLUSTER_CONSOLE_URL
+          value: https://console-openshift-console.apps.sandbox-m4.g2pi.p1.openshiftapps.com
+        - name: CLUSTER_CONSOLE_TITLE
+          value: OpenShift console
+        - name: OPENVSX_REGISTRY_URL
+          value: https://open-vsx.org
+      image: registry.redhat.io/devspaces/udi-rhel8@sha256:571ceed7b4b886b7f989ba193fa74ec863600f56f7c0045f3a1af6dadf09f85b
+      sourceMapping: /projects
+    name: universal-developer-image
